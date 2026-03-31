@@ -89,5 +89,55 @@ class TestLocators:
 
 class TestLocatorsGetBy:
 
-    def test_button(self):
-        pass
+    def test_button_add(self, page):
+        # 1. К кнопке add нужно обратиться используя несколько методов:
+        #     1. Это должен быть <button>
+        #     2. иметь текст “Add”
+        #     3. После нахождения локатора используем метод .click()
+
+        page.goto('https://demoqa.com/webtables')
+
+        add_button = page.get_by_role("button", name="Add")
+        add_button.click()
+
+        # 1. Убедиться что она открылась - используя метод is_visible
+        # 2. Для определения локатора, нужно произвести поиск по вложенным элементам.
+        # Например, чтобы в заголовке модального окна, был текст “Registration Form”
+
+        registration_form_headaer = page.get_by_text("Registration Form")
+        assert registration_form_headaer.is_visible()
+
+        # 3. Заполнить первый инпут следующим образом:
+        #     1. Использовать метод .fill()
+        #     2. Определить локатор как: инпут, имеющий плейсхолдер “First Name”
+
+        first_input = page.get_by_placeholder("First Name")
+        first_input.fill("Billy Herrington")
+
+
+        # 4. Заполнить все остальные поля, обращаясь к локаторам, как вам удобно.
+        form = page.locator("#userForm input").all()
+
+        for field in form:
+
+            placeholder = field.get_attribute("placeholder")
+
+            if placeholder == "First Name":
+                continue
+            elif placeholder == "name@example.com":
+                field.fill("test@gmail.com")
+            elif placeholder == "Age":
+                field.fill("99")
+            elif placeholder == "Salary":
+                field.fill("999999")
+            else: field.fill("Тестовое значение")
+
+        # 5. Нажать кнопку submit
+
+        page.get_by_role("button", name="Submit").click()
+
+        time.sleep(3)
+
+
+
+
