@@ -1,5 +1,6 @@
 import time
 from playwright.sync_api import Page, expect
+from datetime import datetime
 
 class TestSelector:
 
@@ -139,5 +140,92 @@ class TestLocatorsGetBy:
         time.sleep(3)
 
 
+class TestActions:
+
+    def test_form_with_actions(self, page):
+        # 1. Заполнить полностью форму.
+        #     1. Для заполнения пробуйте использовать page.fill() и page.type() и посмотрите разницу.
+        #     2. На странице есть чек боксы, есть радиобатоны и выпадающие списки - со всем этим необходимо повзаимодействовать.
+        # 2. Для поля “Date of birth” что на скриншоте,
+        #     1. нужно убедиться, что значение по умолчанию == сегодня.
+        #     2. Значение из value нужно достать при помощи page.get_attribute()
+        # 3. Из футера нужно достать текст и сделать ассерт, что он совпадает
+
+        page.goto("https://demoqa.com/automation-practice-form")
+
+        page.get_by_placeholder("First Name").fill("Билли")
+        page.type("#lastName", "Херрингтон")
+        page.get_by_placeholder("name@example.com").fill("test@gmail.com")
+        page.check("#gender-radio-1")
+        page.get_by_placeholder("Mobile Number").fill("8999999999")
+        assert page.locator("#dateOfBirthInput").get_attribute("value") == datetime.now().strftime("%d %b %Y")
+        page.check("#hobbies-checkbox-1")
+        page.check("#hobbies-checkbox-3")
+        state_input = page.locator("#react-select-3-input")
+        state_input.fill("NCR")
+        state_input.press("Enter")
 
 
+
+        time.sleep(3)
+
+
+class TestWaitorsAndConditions:
+
+    def test_radio_button(self, page):
+
+        # Задание №1: https://demoqa.com/radio-button, написать тест на проверку активности элементов:
+            # 1. проверка активности 2 радиобаттонов и неактивности 3-го - https://disk.yandex.ru/i/f0NwfPnNQeFeiw
+
+        page.goto("https://demoqa.com/radio-button")
+
+        assert page.is_enabled("#yesRadio") == True
+        assert page.is_enabled("#impressiveRadio") == True
+        assert page.is_enabled("#noRadio") == False
+
+    def test_cheeckbox(self, page):
+
+        # Задание №2: # https://demoqa.com/checkbox. Написать тест на проверку видимости элементов:
+
+            # 1. Написать проверку, что Home виден, а Desktop не виден - https://disk.yandex.ru/i/DaTEP9xbyd3Caw
+            # 2. Произвести клик по тогглу раскрыв список
+            # 3. Сделать проверку, что Desktop видел - https://disk.yandex.ru/i/fohm9ofQ4xXgvg
+
+        page.goto("https://demoqa.com/checkbox")
+        assert page.is_hidden('[aria-label="Select Desktop"]') == True
+
+        page.locator('.rc-tree-switcher').click()
+        assert page.is_hidden('[aria-label="Select Desktop"]') == False
+
+        time.sleep(3)
+
+    def test_dynamic_properties(self, page):
+        pass
+
+        # Задание №3 https://demoqa.com/dynamic-properties
+            # Через 5 секунд после загрузки страницы появится элемент - https://disk.yandex.ru/i/YzzeSOPGMqfpNw
+            # Написать тест, который:
+                # 1. Убедится что элемента нет на странице
+                # 2. Дождаться элемент используя page.wait_for_selector()
+
+        page.goto("https://demoqa.com/dynamic-properties")
+
+        assert page.is_hidden('#visibleAfter') == True
+
+        i = page.wait_for_selector('#visibleAfter', state='visible')
+
+    def test_expect(self, page):
+
+        page.goto("https://demoqa.com/radio-button")
+
+        yes_radio = page.get_by_role("radio", name="Yes")
+        impressive_radio = page.get_by_role("radio", name="Impressive")
+        no_radio = page.get_by_role("radio", name="No")
+
+        expect(no_radio).to_be_disabled()  # проверяем, что не доступен
+        expect(yes_radio).to_be_enabled()  # проверяем, что доступен
+        expect(impressive_radio).to_be_enabled()  # проверяем, что доступен
+
+        page.locator('[for="yesRadio"]').click()  # тут хитрый лейбл не позволяет кликнуть прямо на инпут, обращаемся по лейблу
+        expect(yes_radio).to_be_checked()  # проверяем, что отмечен
+        expect(impressive_radio).not_to_be_checked()  # проверяем, что не отмечен
