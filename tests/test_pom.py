@@ -4,6 +4,7 @@ from playwright.sync_api import sync_playwright
 import allure
 from models.register_page_and_login_page import CinescopeRegisterPage, CinescopeLoginPage
 from utils.data_generator import DataGenerator
+from resorces.user_creds import CommonUserCreds
 
 @allure.epic("Тестирование UI")
 @allure.feature("Тестирование Страницы Register")
@@ -44,13 +45,10 @@ class TestloginPage:
            browser = playwright.chromium.launch(headless=False)# Запуск браузера headless=False для визуального отображения
            page = browser.new_page()
 
-           email = "test@email.com"
-           password = "12345678Aa"
-
            login_page = CinescopeLoginPage(page)# Создаем объект страницы Login
 
            login_page.open()
-           login_page.login(email, password) # Осуществяем вход
+           login_page.login(CommonUserCreds.EMAIL, CommonUserCreds.PASSWORD) # Осуществяем вход
 
            login_page.assert_redirect_to_home_page() # Проверка редиректа на домашнюю страницу
            login_page.make_screenshot_and_attach_to_allure() # Прикрепляем скриншот
