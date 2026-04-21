@@ -9,12 +9,12 @@ import pytest
 @pytest.mark.ui
 class TestFeedbackPage:
 
-    @allure.title("Проведение успешной попытки оставить отзыв с оценкой{film_score}")
-    def test_feedback_page(self, page_with_auth:Page, create_text_to_feedback):
+    @allure.title("Проведение успешной попытки оставить отзыв с оценкой")
+    def test_feedback_page(self, page_with_auth:Page, create_text_to_feedback, film_score):
 
-        feedback_page = FeedbackPage(page_with_auth, film_id="32325", film_score='4')
+        feedback_page = FeedbackPage(page_with_auth, film_id="39587", film_score=film_score)
 
-        feedback_page.open_url(feedback_page.url)
+        feedback_page.open()
 
         feedback_page.enter_text_to_element(feedback_page.area_for_feedback, create_text_to_feedback)
 
@@ -28,7 +28,10 @@ class TestFeedbackPage:
 
         feedback_page.assert_complete_published_feedback(create_text_to_feedback)
 
-        time.sleep(3)
+        feedback_page.assert_complete_published_feedback_rate(film_score, create_text_to_feedback)
+
+        # УБРАТЬ ПОСЛЕ ДЕБАГА
+        time.sleep(1)
 
 
 

@@ -2,6 +2,7 @@ from playwright.sync_api import Page
 import allure
 from typing import Union
 from playwright.sync_api import Locator
+from tools.tools_create_dir_path import Tools
 
 class PageAction:
     def __init__(self, page: Page):
@@ -45,6 +46,7 @@ class PageAction:
     @allure.step("Скриншот текущей страницы")
     def make_screenshot_and_attach_to_allure(self):
         screenshot_path = r"C:\Users\Daniel\PythonProjects\6_and_7_modul\files\screenshots\screenshot.png"
+        screenshot_path = Tools.files_dir('screenshots', 'screenshot.png')
         self.page.screenshot(path=screenshot_path, full_page=True)  # full_page=True для скриншота всей страницы
 
         # Прикрепление скриншота к Allure-отчёту
@@ -54,13 +56,12 @@ class PageAction:
 
     @allure.step("Проверка всплывающего сообщения c текстом: {text}")
     def check_pop_up_element_with_text(self, text: str) -> bool:
-        with allure.step("Проверка появления алерта с текстом: '{text}'"):
-            notification_locator = self.page.get_by_text(text)
-            # Ждем появления элемента
-            notification_locator.wait_for(state="visible")
-            assert notification_locator.is_visible(), "Уведомление не появилось"
 
-        with allure.step("Проверка исчезновения алерта с текстом: '{text}'"):
-            # Ждем, пока алерт исчезнет
-            notification_locator.wait_for(state="hidden")
-            assert notification_locator.is_visible() == False, "Уведомление не исчезло"
+        notification_locator = self.page.get_by_text(text)
+        # Ждем появления элемента
+        notification_locator.wait_for(state="visible")
+        assert notification_locator.is_visible(), "Уведомление не появилось"
+
+        # Ждем, пока алерт исчезнет
+        notification_locator.wait_for(state="hidden")
+        assert notification_locator.is_visible() == False, "Уведомление не исчезло"

@@ -4,7 +4,7 @@ from playwright.sync_api import sync_playwright
 import allure
 from models.register_page_and_login_page import CinescopeRegisterPage, CinescopeLoginPage
 from utils.data_generator import DataGenerator
-from resorces.user_creds import CommonUserCreds
+from resources.user_creds import CommonUserCreds
 
 @allure.epic("Тестирование UI")
 @allure.feature("Тестирование Страницы Register")

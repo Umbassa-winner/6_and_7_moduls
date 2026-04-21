@@ -139,3 +139,10 @@ class DataGenerator:
     @staticmethod
     def generate_random_int():
         return faker.random_int()
+
+
+# """ ============================== API AUTH ================================== """
+
+    @staticmethod
+    def generate_random_film_score():
+        return faker.random_int(1, 5)

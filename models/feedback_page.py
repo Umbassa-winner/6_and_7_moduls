@@ -1,5 +1,5 @@
 from models.base_page import BasePage
-from playwright.sync_api import Page
+from playwright.sync_api import Page, expect
 import allure
 
 class FeedbackPage(BasePage):
@@ -8,7 +8,6 @@ class FeedbackPage(BasePage):
         super().__init__(page)
 
         self.url = f"{self.home_url}movies/{film_id}"
-
         self.area_for_feedback = page.get_by_role("textbox", name="Написать отзыв")
         self.combox_button = page.get_by_role("combobox")
 
@@ -16,13 +15,21 @@ class FeedbackPage(BasePage):
         assert film_score in allow_score, f'Выбранная оценка фильма: {film_score}, вне range {allow_score}'
 
         self.combox_point = page.get_by_role("option", name=film_score)
-
         self.send_button = page.get_by_role("button", name="Отправить")
+        self.feedback_container = page.locator('.w-full.mt-5')
+
+    # Локальные методы
+
+    @allure.step("Открытие страницы Отзывов")
+    def open(self):
+        self.page.goto(self.url)
 
     @allure.step("Проверка, что текст отзыва опубликовался")
     def assert_complete_published_feedback(self, text: str):
-        self.page.get_by_text(text)
+        expect(self.page.get_by_text(text)).to_be_visible()
 
     @allure.step("Проверка, что оценка отзыва опубликовалась")
-    def assert_complete_published_feedback_rate(self, point: str):
-        self.page.get_by_text(point)
+    def assert_complete_published_feedback_rate(self, point: str, text:str):
+
+        my_review = self.feedback_container.filter(has_text=text)
+        expect(my_review.get_by_text(f"{point}/5", exact=False)).to_be_visible()
