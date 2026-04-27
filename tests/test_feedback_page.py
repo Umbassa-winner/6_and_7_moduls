@@ -30,9 +30,6 @@ class TestFeedbackPage:
 
         feedback_page.assert_complete_published_feedback_rate(film_score, create_text_to_feedback)
 
-        # УБРАТЬ ПОСЛЕ ДЕБАГА
-        time.sleep(1)
-
 
 
 

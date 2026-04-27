@@ -45,7 +45,6 @@ class PageAction:
 
     @allure.step("Скриншот текущей страницы")
     def make_screenshot_and_attach_to_allure(self):
-        screenshot_path = r"C:\Users\Daniel\PythonProjects\6_and_7_modul\files\screenshots\screenshot.png"
         screenshot_path = Tools.files_dir('screenshots', 'screenshot.png')
         self.page.screenshot(path=screenshot_path, full_page=True)  # full_page=True для скриншота всей страницы
 
